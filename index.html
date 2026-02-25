@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Darshan Oracle Labs</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    .folder-toggle { cursor: pointer; }
+    .folder-toggle:hover { background-color: rgba(0,0,0,.04); }
+    .folder-content { border-left: 2px solid #dee2e6; margin-left: 1rem; padding-left: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+    <h1 class="mb-4">Darshan Oracle Labs</h1>
+    <div id="content"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Edit links here - add your URLs in the url fields
+    const linksData = {
+      "today": {
+        "Day1": [
+          { "name": "1 Python Brush-up.ipynb", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%201%2F1%20Python%20Brush-up.ipynb" },
+          { "name": "2 Working with OpenAI API.ipynb", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%201%2F2%20Working%20with%20OpenAI%20API.ipynb" },
+          { "name": "titanic.csv", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%201%2Ftitanic.csv" }
+        ],
+        "Day2": [
+          { "name": "1 Working with OpenAI API.ipynb", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%202%2F1%20Working%20with%20OpenAI%20API.ipynb" },
+          { "name": "2 HuggingFace.ipynb", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%202%2F2%20HuggingFace.ipynb" },
+          { "name": "3 Text Summarization (Google Colab).ipynb", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%202%2F3%20Text%20Summarization%20(Google%20Colab).ipynb" },
+          { "name": "ES.jpeg", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%202%2FES.jpeg" }
+        ],
+        "Day3": [],
+        "Virtual Environment": [
+          { "name": "Virtual_Environment_Creation.ipynb", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Virtual%20Environment%2FVirtual_Environment_Creation.ipynb" },
+          { "name": "requirements.txt", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Virtual%20Environment%2Frequirements.txt" }
+        ]
+      },
+      "yesterday": [
+        { "name": "Software needed & List of packages", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Software%20needed%20%26%20List%20of%20packages.docx", "type": "word" }
+      ],
+      "earlierThisWeek": [
+        { "name": "Darshans Training VM_s - Oracle", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/DarshanDarshans%20Training%20VM_s%20-%20Oracle.xlsx", "type": "excel" },
+        { "name": "Modern AI Tech Stack_TOC (Designing and Deploying the Mod...)", "url": "", "type": "word" }
+      ]
+    };
+
+    function renderLinks() {
+      const data = linksData;
+      const content = document.getElementById('content');
+      let html = '';
+
+      // Today - Folders
+      html += '<h5 class="text-muted mt-4 mb-2">Today</h5><div class="list-group mb-3">';
+      const folderIds = { 'Day1': 'day1', 'Day2': 'day2', 'Day3': 'day3', 'Virtual Environment': 'virtualEnv' };
+      for (const [folderName, files] of Object.entries(data.today)) {
+        const id = folderIds[folderName];
+        html += `
+          <div class="list-group-item p-0 border-0">
+            <div class="folder-toggle d-flex align-items-center px-3 py-2" data-bs-toggle="collapse" data-bs-target="#${id}">
+              <i class="bi bi-folder2-open me-2 text-warning"></i>
+              <span class="fw-medium">${folderName}</span>
+              <i class="bi bi-chevron-down ms-auto"></i>
+            </div>
+            <div class="collapse" id="${id}">
+              <div class="folder-content py-2">
+                ${files.map(f => `
+                  <div class="d-flex justify-content-between align-items-center py-2">
+                    <span><i class="bi bi-file-earmark me-2 text-secondary"></i>${f.name}</span>
+                    <a href="${f.url || '#'}" class="btn btn-primary btn-sm" ${f.url ? 'download' : ''}>Download</a>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      html += '</div>';
+
+      // Yesterday
+      html += '<h5 class="text-muted mt-4 mb-2">Yesterday</h5><div class="list-group mb-3">';
+      const iconClass = (t) => t === 'excel' ? 'bi-file-earmark-excel text-success' : t === 'word' ? 'bi-file-earmark-word text-primary' : 'bi-file-earmark text-secondary';
+      data.yesterday.forEach(f => {
+        html += `
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <span><i class="bi ${iconClass(f.type)} me-2"></i>${f.name}</span>
+            <a href="${f.url || '#'}" class="btn btn-primary btn-sm" ${f.url ? 'download' : ''}>Download</a>
+          </div>
+        `;
+      });
+      html += '</div>';
+
+      // Earlier this week
+      html += '<h5 class="text-muted mt-4 mb-2">Earlier this week</h5><div class="list-group mb-3">';
+      data.earlierThisWeek.forEach(f => {
+        html += `
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <span><i class="bi ${iconClass(f.type)} me-2"></i>${f.name}</span>
+            <a href="${f.url || '#'}" class="btn btn-primary btn-sm" ${f.url ? 'download' : ''}>Download</a>
+          </div>
+        `;
+      });
+      html += '</div>';
+
+      content.innerHTML = html;
+    }
+    renderLinks();
+  </script>
+</body>
+</html>
