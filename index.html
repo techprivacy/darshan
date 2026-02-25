@@ -34,7 +34,22 @@
           { "name": "3 Text Summarization (Google Colab).ipynb", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%202%2F3%20Text%20Summarization%20(Google%20Colab).ipynb" },
           { "name": "ES.jpeg", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%202%2FES.jpeg" }
         ],
-        "Day3": [],
+        "Day3": {
+          "3 Ollama using Streamlit local deployment": [
+            { "name": "app.py", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%203%2Fapp.py" }
+          ],
+          "4 Finetuning": [
+            { "name": "RUN - Fine-tuning OpenAI GPT models.ipynb", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%203%2FRUN%20-%20Fine-tuning%20OpenAI%20GPT%20models.ipynb" },
+            { "name": "OPENAI_API_KEY_DAI", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%203%2FOPENAI_API_KEY_DAI.txt" },
+            { "name": "Fine-tuning OpenAI GPT models.ipynb", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%203%2FFine-tuning%20OpenAI%20GPT%20models.ipynb" },
+            { "name": "Finetuning Need.docx", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%203%2FFinetuning%20Need.docx" },
+            { "name": "hr_policy_val.jsonl", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%203%2Fhr_policy_val.jsonl" },
+            { "name": "hr_policy_train.jsonl", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%203%2Fhr_policy_train.jsonl" }
+          ],
+          "4 RAG": [
+            { "name": "RAG system using LangChain and OpenAI (Colab Friendly).ipynb", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%203%2FRAG%20system%20using%20LangChain%20and%20OpenAI%20(Colab%20Friendly).ipynb" }
+          ]
+        },
         "Virtual Environment": [
           { "name": "Virtual_Environment_Creation.ipynb", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Virtual%20Environment%2FVirtual_Environment_Creation.ipynb" },
           { "name": "requirements.txt", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Virtual%20Environment%2Frequirements.txt" }
@@ -57,8 +72,41 @@
       // Today - Folders
       html += '<h5 class="text-muted mt-4 mb-2">Today</h5><div class="list-group mb-3">';
       const folderIds = { 'Day1': 'day1', 'Day2': 'day2', 'Day3': 'day3', 'Virtual Environment': 'virtualEnv' };
-      for (const [folderName, files] of Object.entries(data.today)) {
+      for (const [folderName, folderData] of Object.entries(data.today)) {
         const id = folderIds[folderName];
+        const isNested = !Array.isArray(folderData);
+        let innerHtml = '';
+        if (isNested) {
+          for (const [subName, files] of Object.entries(folderData)) {
+            const subId = id + '-' + subName.replace(/\s/g, '');
+            innerHtml += `
+              <div class="mb-2">
+                <div class="folder-toggle d-flex align-items-center py-2" data-bs-toggle="collapse" data-bs-target="#${subId}">
+                  <i class="bi bi-folder2 me-2 text-warning"></i>
+                  <span class="fw-medium">${subName}</span>
+                  <i class="bi bi-chevron-down ms-auto"></i>
+                </div>
+                <div class="collapse" id="${subId}">
+                  <div class="folder-content py-2 ms-2">
+                    ${files.map(f => `
+                      <div class="d-flex justify-content-between align-items-center py-2">
+                        <span><i class="bi bi-file-earmark me-2 text-secondary"></i>${f.name}</span>
+                        <a href="${f.url || '#'}" class="btn btn-primary btn-sm" ${f.url ? 'download' : ''}>Download</a>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+            `;
+          }
+        } else {
+          innerHtml = folderData.map(f => `
+            <div class="d-flex justify-content-between align-items-center py-2">
+              <span><i class="bi bi-file-earmark me-2 text-secondary"></i>${f.name}</span>
+              <a href="${f.url || '#'}" class="btn btn-primary btn-sm" ${f.url ? 'download' : ''}>Download</a>
+            </div>
+          `).join('');
+        }
         html += `
           <div class="list-group-item p-0 border-0">
             <div class="folder-toggle d-flex align-items-center px-3 py-2" data-bs-toggle="collapse" data-bs-target="#${id}">
@@ -68,12 +116,7 @@
             </div>
             <div class="collapse" id="${id}">
               <div class="folder-content py-2">
-                ${files.map(f => `
-                  <div class="d-flex justify-content-between align-items-center py-2">
-                    <span><i class="bi bi-file-earmark me-2 text-secondary"></i>${f.name}</span>
-                    <a href="${f.url || '#'}" class="btn btn-primary btn-sm" ${f.url ? 'download' : ''}>Download</a>
-                  </div>
-                `).join('')}
+                ${innerHtml}
               </div>
             </div>
           </div>
