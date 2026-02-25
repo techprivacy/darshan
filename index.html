@@ -46,9 +46,14 @@
             { "name": "hr_policy_val.jsonl", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%203%2Fhr_policy_val.jsonl" },
             { "name": "hr_policy_train.jsonl", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%203%2Fhr_policy_train.jsonl" }
           ],
-          "4 RAG": [
-            { "name": "RAG system using LangChain and OpenAI (Colab Friendly).ipynb", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%203%2FRAG%20system%20using%20LangChain%20and%20OpenAI%20(Colab%20Friendly).ipynb" }
-          ]
+          "4 RAG": {
+            "_files": [
+              { "name": "RAG system using LangChain and OpenAI (Colab Friendly).ipynb", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%203%2FRAG%20system%20using%20LangChain%20and%20OpenAI%20(Colab%20Friendly).ipynb" }
+            ],
+            "Docs": [
+              { "name": "Company_policy.pdf", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Day%203%2Fcompany_policy.pdf" }
+            ]
+          }
         },
         "Virtual Environment": [
           { "name": "Virtual_Environment_Creation.ipynb", "url": "https://objectstorage.ap-hyderabad-1.oraclecloud.com/n/axmxkzxveubm/b/Darshan/o/Virtual%20Environment%2FVirtual_Environment_Creation.ipynb" },
@@ -77,8 +82,53 @@
         const isNested = !Array.isArray(folderData);
         let innerHtml = '';
         if (isNested) {
-          for (const [subName, files] of Object.entries(folderData)) {
-            const subId = id + '-' + subName.replace(/\s/g, '');
+          for (const [subName, subData] of Object.entries(folderData)) {
+            const subId = id + '-' + subName.replace(/\s/g, '').replace(/[^a-zA-Z0-9]/g, '');
+            if (subName === '_files') continue;
+            const files = Array.isArray(subData) ? subData : [];
+            const hasNested = !Array.isArray(subData) && typeof subData === 'object';
+            let subInnerHtml = '';
+            if (hasNested) {
+              if (subData._files) {
+                subInnerHtml += subData._files.map(f => `
+                  <div class="d-flex justify-content-between align-items-center py-2">
+                    <span><i class="bi bi-file-earmark me-2 text-secondary"></i>${f.name}</span>
+                    <a href="${f.url || '#'}" class="btn btn-primary btn-sm" ${f.url ? 'download' : ''}>Download</a>
+                  </div>
+                `).join('');
+              }
+              for (const [nestedName, nestedData] of Object.entries(subData)) {
+                if (nestedName === '_files') continue;
+                const nestedId = subId + '-' + nestedName.replace(/\s/g, '').replace(/[^a-zA-Z0-9]/g, '');
+                const nestedFiles = Array.isArray(nestedData) ? nestedData : [];
+                subInnerHtml += `
+                  <div class="mb-2">
+                    <div class="folder-toggle d-flex align-items-center py-2" data-bs-toggle="collapse" data-bs-target="#${nestedId}">
+                      <i class="bi bi-folder2 me-2 text-warning"></i>
+                      <span class="fw-medium">${nestedName}</span>
+                      <i class="bi bi-chevron-down ms-auto"></i>
+                    </div>
+                    <div class="collapse" id="${nestedId}">
+                      <div class="folder-content py-2 ms-2">
+                        ${nestedFiles.map(f => `
+                          <div class="d-flex justify-content-between align-items-center py-2">
+                            <span><i class="bi bi-file-earmark me-2 text-secondary"></i>${f.name}</span>
+                            <a href="${f.url || '#'}" class="btn btn-primary btn-sm" ${f.url ? 'download' : ''}>Download</a>
+                          </div>
+                        `).join('')}
+                      </div>
+                    </div>
+                  </div>
+                `;
+              }
+            } else {
+              subInnerHtml = files.map(f => `
+                <div class="d-flex justify-content-between align-items-center py-2">
+                  <span><i class="bi bi-file-earmark me-2 text-secondary"></i>${f.name}</span>
+                  <a href="${f.url || '#'}" class="btn btn-primary btn-sm" ${f.url ? 'download' : ''}>Download</a>
+                </div>
+              `).join('');
+            }
             innerHtml += `
               <div class="mb-2">
                 <div class="folder-toggle d-flex align-items-center py-2" data-bs-toggle="collapse" data-bs-target="#${subId}">
@@ -88,12 +138,7 @@
                 </div>
                 <div class="collapse" id="${subId}">
                   <div class="folder-content py-2 ms-2">
-                    ${files.map(f => `
-                      <div class="d-flex justify-content-between align-items-center py-2">
-                        <span><i class="bi bi-file-earmark me-2 text-secondary"></i>${f.name}</span>
-                        <a href="${f.url || '#'}" class="btn btn-primary btn-sm" ${f.url ? 'download' : ''}>Download</a>
-                      </div>
-                    `).join('')}
+                    ${subInnerHtml}
                   </div>
                 </div>
               </div>
